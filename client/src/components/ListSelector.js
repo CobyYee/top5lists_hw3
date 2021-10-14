@@ -33,7 +33,8 @@ const ListSelector = () => {
                     type="button"
                     id="add-list-button"
                     className="top5-button"
-                    value="+" />
+                    value="+" 
+                    onClick = {store.addList}/>
                 Your Lists
             </div>
             <div id="list-selector-list">
