@@ -239,7 +239,7 @@ export const useGlobalStore = () => {
             payload: {}
         });
         tps.clearAllTransactions();
-        store.updateToolbar();
+        //store.updateToolbar();
         document.getElementById("close-button").className = "top5-button-disabled";
     }
 
@@ -291,7 +291,7 @@ export const useGlobalStore = () => {
     store.addMoveItemTransaction = function (start, end) {
         let transaction = new MoveItem_Transaction(store, start, end);
         tps.addTransaction(transaction);
-        store.updateToolbar();
+        //store.updateToolbar();
     }
     store.moveItem = function (start, end) {
         start -= 1;
@@ -374,20 +374,11 @@ export const useGlobalStore = () => {
         }
         asyncDelete();
     }
-
-    store.updateToolbar = function() {
-        if (tps.hasTransactionToUndo()) {
-            document.getElementById("undo-button").className = "top5-button";
-        }
-        else {
-            document.getElementById("undo-button").className = "top5-button-disabled";
-        }
-        if(tps.hasTransactionToRedo()) {
-            document.getElementById("redo-button").className = "top5-button";
-        }
-        else {
-            document.getElementById("redo-button").className = "top5-button-disabled";
-        }
+    store.canUndo = function () {
+        return tps.hasTransactionToUndo();
+    }
+    store.canRedo = function () {
+        return tps.hasTransactionToRedo();
     }
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
     return { store, storeReducer };

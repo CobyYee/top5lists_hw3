@@ -11,44 +11,55 @@ function EditToolbar() {
     const { store } = useContext(GlobalStoreContext);
     const history = useHistory();
 
-    let enabledButtonClass = "top5-button";
     function handleUndo() {
         store.undo();
-        store.updateToolbar();
     }
     function handleRedo() {
         store.redo();
-        store.updateToolbar();
     }
     function handleClose() {
         history.push("/");
         store.closeCurrentList();
     }
-    let editStatus = false;
-    if (store.isListNameEditActive) {
-        editStatus = true;
+    let undoStatus = true;
+    let undoClass = "top5-button-disabled";
+    let redoStatus = true;
+    let redoClass = "top5-button-disabled";
+    let closeStatus = true;
+    let closeClass = "top5-button-disabled";
+    if(store.currentList != null) {
+        if(store.canUndo()) {
+            undoStatus = false;
+            undoClass = "top5-button";
+        }
+        if(store.canRedo()) {
+            redoStatus = false;
+            redoClass = "top5-button";
+        }
+        closeStatus = false;
+        closeClass = "top5-button";
     }
     return (
         <div id="edit-toolbar">
             <div
-                disabled={editStatus}
+                disabled={undoStatus}
                 id='undo-button'
                 onClick={handleUndo}
-                className={enabledButtonClass}>
+                className={undoClass}>
                 &#x21B6;
             </div>
             <div
-                disabled={editStatus}
+                disabled={redoStatus}
                 id='redo-button'
                 onClick={handleRedo}
-                className={enabledButtonClass}>
+                className={redoClass}>
                 &#x21B7;
             </div>
             <div
-                disabled={editStatus}
+                disabled={closeStatus}
                 id='close-button'
                 onClick={handleClose}
-                className={enabledButtonClass}>
+                className={closeClass}>
                 &#x24E7;
             </div>
         </div>
