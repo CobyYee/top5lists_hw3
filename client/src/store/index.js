@@ -2,6 +2,7 @@ import { createContext, useState } from 'react'
 import jsTPS from '../common/jsTPS'
 import api from '../api'
 import MoveItem_Transaction from '../transactions/MoveItem_Transaction'
+import RenameItem_Transaction from '../transactions/RenameItem_Transaction'
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -18,7 +19,8 @@ export const GlobalStoreActionType = {
     LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
-    ADD_NEW_LIST: "ADD_NEW_LIST"
+    ADD_NEW_LIST: "ADD_NEW_LIST",
+    SET_ITEM_EDIT_ACTIVE: "SET_ITEM_EDIT_ACTIVE"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -106,7 +108,18 @@ export const useGlobalStore = () => {
                     isListNameEditActive: false,
                     isItemEditActive: false,
                     listMarkedForDeletion: null
-                })
+                });
+            }
+            // START EDITING AN ITEM
+            case GlobalStoreActionType.SET_ITEM_EDIT_ACTIVE: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    isListNameEditActive: false,
+                    isItemEditActive: true,
+                    listMarkedForDeletion: null
+                });
             }
             default:
                 return store;
@@ -148,6 +161,12 @@ export const useGlobalStore = () => {
         }
         asyncChangeListName(id);
     }
+    // THIS FUNCTION CHANGES AN ITEM NAME
+    store.renameItem = function (oldText, newText, index) {
+        store.currentList.items[index] = newText;
+        store.updateCurrentList();
+    }
+
     // THIS FUNCTION CREATES A NEW LIST
     store.addList = function () {
         async function asyncAddList() {
@@ -221,6 +240,10 @@ export const useGlobalStore = () => {
         }
         asyncSetCurrentList(id);
     }
+    store.addRenameItemTransaction = function (index, newName) {
+        let transaction = new RenameItem_Transaction(store, index-1, store.currentList.items[index-1], newName);
+        tps.addTransaction(transaction);
+    }
     store.addMoveItemTransaction = function (start, end) {
         let transaction = new MoveItem_Transaction(store, start, end);
         tps.addTransaction(transaction);
@@ -272,7 +295,12 @@ export const useGlobalStore = () => {
             payload: null
         });
     }
-
+    store.setItemEditActive = function () {
+        storeReducer({
+            type: GlobalStoreActionType.SET_ITEM_EDIT_ACTIVE,
+            payload: null
+        });
+    }
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
     return { store, storeReducer };
 }

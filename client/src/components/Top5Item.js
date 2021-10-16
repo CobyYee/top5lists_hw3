@@ -9,6 +9,8 @@ import { GlobalStoreContext } from '../store'
 function Top5Item(props) {
     const { store } = useContext(GlobalStoreContext);
     const [draggedTo, setDraggedTo] = useState(0);
+    const [text, setText] = useState(props.text);
+    const [editActive, setItemEdit] = useState("false");
 
     function handleDragStart(event) {
         event.dataTransfer.setData("item", event.target.id);
@@ -41,12 +43,37 @@ function Top5Item(props) {
         store.addMoveItemTransaction(sourceId, targetId);
     }
 
+    function handleToggleEdit(event) {
+        event.stopPropagation();
+        toggleEdit();
+    }
+
+    function toggleEdit() {
+        let newActive = !editActive;
+        if(newActive) {
+            store.setItemEditActive();
+        }
+        setItemEdit(newActive);
+    }
+
+    function handleChange(event) {
+        setText(event.target.value);
+    }
+
+    function handleKeyPress(event) {
+        if(event.code === "Enter") {
+            let id = event.target.id.substring("item-".length);
+            store.addRenameItemTransaction(id, text);
+            toggleEdit();
+        }
+    }
+
     let { index } = props;
     let itemClass = "top5-item";
     if (draggedTo) {
         itemClass = "top5-item-dragged-to";
     }
-    return (
+    let item = 
         <div
             id={'item-' + (index + 1)}
             className={itemClass}
@@ -62,9 +89,23 @@ function Top5Item(props) {
                 id={"edit-item-" + index + 1}
                 className="list-card-button"
                 value={"\u270E"}
+                onClick = {handleToggleEdit}
             />
             {props.text}
-        </div>)
+        </div>
+    if(!editActive) {
+        item = 
+            <input
+                id = {'item-' + (index + 1)}
+                className = {itemClass}
+                type = 'text'
+                onKeyPress = {handleKeyPress}
+                onChange = {handleChange}
+                defaultValue = {text}
+            >
+            </input>
+    }
+    return item;
 }
 
 export default Top5Item;
