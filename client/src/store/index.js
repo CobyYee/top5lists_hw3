@@ -275,6 +275,7 @@ export const useGlobalStore = () => {
     store.addMoveItemTransaction = function (start, end) {
         let transaction = new MoveItem_Transaction(store, start, end);
         tps.addTransaction(transaction);
+        store.updateToolbar();
     }
     store.moveItem = function (start, end) {
         start -= 1;
@@ -356,9 +357,6 @@ export const useGlobalStore = () => {
             }
         }
         asyncDelete();
-    }
-    store.canUndo = function() {
-        return tps.hasTransactionToUndo();
     }
 
     store.updateToolbar = function() {
