@@ -46,6 +46,7 @@ function Top5Item(props) {
     function handleToggleEdit(event) {
         event.stopPropagation();
         toggleEdit();
+        store.updateToolbar();
     }
 
     function toggleEdit() {
@@ -65,6 +66,7 @@ function Top5Item(props) {
             let id = event.target.id.substring("item-".length);
             store.addRenameItemTransaction(id, text);
             toggleEdit();
+            store.updateToolbar();
         }
     }
 

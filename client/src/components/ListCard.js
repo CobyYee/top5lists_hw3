@@ -48,12 +48,13 @@ function ListCard(props) {
     }
 
     function handleUpdateText(event) {
-        setText(event.target.value );
+        setText(event.target.value);
     }
 
     function showDeleteModal(event) {
         event.stopPropagation();
-        store.showDeleteModal();
+        let id = event.target.id.substring("delete-list-".length);
+        store.showDeleteModal(id);
     }
 
     let selectClass = "unselected-list-card";

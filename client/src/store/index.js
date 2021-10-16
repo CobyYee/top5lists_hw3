@@ -20,7 +20,9 @@ export const GlobalStoreActionType = {
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
     ADD_NEW_LIST: "ADD_NEW_LIST",
-    SET_ITEM_EDIT_ACTIVE: "SET_ITEM_EDIT_ACTIVE"
+    SET_ITEM_EDIT_ACTIVE: "SET_ITEM_EDIT_ACTIVE",
+    MARK_LIST_DELETION: "MARK_LIST_DELETION",
+    CLEAR_LIST_DELETION: "CLEAR_LIST_DELETION"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -121,6 +123,27 @@ export const useGlobalStore = () => {
                     listMarkedForDeletion: null
                 });
             }
+            // MARK THE LIST THAT WILL BE DELETED
+            case GlobalStoreActionType.MARK_LIST_DELETION: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    isListNameEditActive: false,
+                    isItemEditActive: false,
+                    listMarkedForDeletion: payload
+                })
+            }
+            case GlobalStoreActionType.CLEAR_LIST_DELETION: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    isListNameEditActive: false,
+                    isItemEditActive: false,
+                    listMarkedForDeletion: null
+                })
+            }
             default:
                 return store;
         }
@@ -191,6 +214,7 @@ export const useGlobalStore = () => {
             }
         }
         asyncAddList();
+        document.getElementById("close-button").className = "top5-button";
     }
     // THIS FUNCTION PROCESSES CLOSING THE CURRENTLY LOADED LIST
     store.closeCurrentList = function () {
@@ -198,6 +222,9 @@ export const useGlobalStore = () => {
             type: GlobalStoreActionType.CLOSE_CURRENT_LIST,
             payload: {}
         });
+        tps.clearAllTransactions();
+        store.updateToolbar();
+        document.getElementById("close-button").className = "top5-button-disabled";
     }
 
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
@@ -239,6 +266,7 @@ export const useGlobalStore = () => {
             }
         }
         asyncSetCurrentList(id);
+        document.getElementById("close-button").className = "top5-button";
     }
     store.addRenameItemTransaction = function (index, newName) {
         let transaction = new RenameItem_Transaction(store, index-1, store.currentList.items[index-1], newName);
@@ -301,13 +329,51 @@ export const useGlobalStore = () => {
             payload: null
         });
     }
-    store.showDeleteModal = function() { 
+    store.showDeleteModal = function(id) { 
         let modal = document.getElementById("delete-modal");
+        storeReducer({
+            type: GlobalStoreActionType.MARK_LIST_DELETION,
+            payload: id
+        })
         modal.classList.add("is-visible");
     }
     store.hideDeleteListModal = function() {
         let modal = document.getElementById("delete-modal");
+        storeReducer({
+            type:GlobalStoreActionType.CLEAR_LIST_DELETION,
+            payload: null
+        })
         modal.classList.remove("is-visible");
+    }
+    store.deleteMarkedList = function() {
+        async function asyncDelete() {
+            try {
+                const response = await api.deleteTop5ListById(store.listMarkedForDeletion);
+                await store.hideDeleteListModal();
+                await store.loadIdNamePairs();
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        asyncDelete();
+    }
+    store.canUndo = function() {
+        return tps.hasTransactionToUndo();
+    }
+
+    store.updateToolbar = function() {
+        if (tps.hasTransactionToUndo()) {
+            document.getElementById("undo-button").className = "top5-button";
+        }
+        else {
+            document.getElementById("undo-button").className = "top5-button-disabled";
+        }
+        if(tps.hasTransactionToRedo()) {
+            document.getElementById("redo-button").className = "top5-button";
+        }
+        else {
+            document.getElementById("redo-button").className = "top5-button-disabled";
+        }
     }
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
     return { store, storeReducer };
