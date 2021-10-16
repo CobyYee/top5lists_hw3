@@ -301,6 +301,14 @@ export const useGlobalStore = () => {
             payload: null
         });
     }
+    store.showDeleteModal = function() { 
+        let modal = document.getElementById("delete-modal");
+        modal.classList.add("is-visible");
+    }
+    store.hideDeleteListModal = function() {
+        let modal = document.getElementById("delete-modal");
+        modal.classList.remove("is-visible");
+    }
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
     return { store, storeReducer };
 }

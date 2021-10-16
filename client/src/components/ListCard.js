@@ -53,6 +53,7 @@ function ListCard(props) {
 
     function showDeleteModal(event) {
         event.stopPropagation();
+        store.showDeleteModal();
     }
 
     let selectClass = "unselected-list-card";
