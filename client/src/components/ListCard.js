@@ -27,6 +27,7 @@ function ListCard(props) {
     }
 
     function handleToggleEdit(event) {
+        document.getElementById("add-list-button").className = "top5-button-disabled";
         event.stopPropagation();
         toggleEdit();
     }
@@ -44,6 +45,7 @@ function ListCard(props) {
             let id = event.target.id.substring("list-".length);
             store.changeListName(id, text);
             toggleEdit();
+            document.getElementById("add-list-button").className = "top5-button";
         }
     }
 

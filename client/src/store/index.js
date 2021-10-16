@@ -350,8 +350,8 @@ export const useGlobalStore = () => {
         async function asyncDelete() {
             try {
                 const response = await api.deleteTop5ListById(store.listMarkedForDeletion);
-                await store.hideDeleteListModal();
-                await store.loadIdNamePairs();
+                store.hideDeleteListModal();
+                store.loadIdNamePairs();
             } catch (error) {
                 console.log(error);
             }
