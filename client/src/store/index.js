@@ -22,7 +22,8 @@ export const GlobalStoreActionType = {
     ADD_NEW_LIST: "ADD_NEW_LIST",
     SET_ITEM_EDIT_ACTIVE: "SET_ITEM_EDIT_ACTIVE",
     MARK_LIST_DELETION: "MARK_LIST_DELETION",
-    CLEAR_LIST_DELETION: "CLEAR_LIST_DELETION"
+    CLEAR_LIST_DELETION: "CLEAR_LIST_DELETION",
+    STOP_EDITING_LIST_NAME: "STOP_EDITING_LIST_NAME "
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -100,6 +101,17 @@ export const useGlobalStore = () => {
                     isItemEditActive: false,
                     listMarkedForDeletion: null
                 });
+            }
+            // STOP EDITING A LIST NAME
+            case GlobalStoreActionType.STOP_EDITING_LIST_NAME: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    isListNameEditActive: false,
+                    isItemEditActive: false,
+                    listMarkedForDeletion: null
+                })
             }
             // ADD A NEW LIST
             case GlobalStoreActionType.ADD_NEW_LIST: {
@@ -183,6 +195,10 @@ export const useGlobalStore = () => {
             }
         }
         asyncChangeListName(id);
+        storeReducer({
+            type: GlobalStoreActionType.STOP_EDITING_LIST_NAME,
+            payload: null
+        })
     }
     // THIS FUNCTION CHANGES AN ITEM NAME
     store.renameItem = function (oldText, newText, index) {
