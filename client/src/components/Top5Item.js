@@ -45,6 +45,7 @@ function Top5Item(props) {
 
     function handleToggleEdit(event) {
         event.stopPropagation();
+        setText(props.text);
         toggleEdit();
     }
 
@@ -62,16 +63,16 @@ function Top5Item(props) {
 
     function handleKeyPress(event) {
         if(event.code === "Enter") {
+            toggleEdit();
             let id = event.target.id.substring("item-".length);
             store.addRenameItemTransaction(id, text);
-            toggleEdit();
         }
     }
 
     function blur(event) {
+        toggleEdit();
         let id = event.target.id.substring("item-".length);
         store.addRenameItemTransaction(id, text);
-        toggleEdit();
     }
 
     let editDisabled = false;
@@ -118,7 +119,7 @@ function Top5Item(props) {
                 type = 'text'
                 onKeyPress = {handleKeyPress}
                 onChange = {handleChange}
-                defaultValue = {text}
+                defaultValue = {props.text}
                 autoFocus
                 onBlur={blur}
             >

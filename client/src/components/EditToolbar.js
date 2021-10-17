@@ -25,8 +25,6 @@ function EditToolbar() {
     let undoClass = "top5-button-disabled";
     let redoStatus = true;
     let redoClass = "top5-button-disabled";
-    let closeStatus = true;
-    let closeClass = "top5-button-disabled";
     if(store.currentList != null && store.isItemEditActive === false) {
         if(store.canUndo()) {
             undoStatus = false;
@@ -36,8 +34,6 @@ function EditToolbar() {
             redoStatus = false;
             redoClass = "top5-button";
         }
-        closeStatus = false;
-        closeClass = "top5-button";
     }
     return (
         <div id="edit-toolbar">
@@ -56,10 +52,10 @@ function EditToolbar() {
                 &#x21B7;
             </div>
             <div
-                disabled={closeStatus}
+                disabled={true}
                 id='close-button'
                 onClick={handleClose}
-                className={closeClass}>
+                className="top5-button-disabled">
                 &#x24E7;
             </div>
         </div>

@@ -247,6 +247,7 @@ export const useGlobalStore = () => {
         }
         asyncAddList();
         document.getElementById("close-button").className = "top5-button";
+        document.getElementById("close-button").disabled = false;
     }
     // THIS FUNCTION PROCESSES CLOSING THE CURRENTLY LOADED LIST
     store.closeCurrentList = function () {
@@ -255,8 +256,8 @@ export const useGlobalStore = () => {
             payload: {}
         });
         tps.clearAllTransactions();
-        //store.updateToolbar();
         document.getElementById("close-button").className = "top5-button-disabled";
+        document.getElementById("close-button").disabled = true;
     }
 
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
@@ -299,6 +300,7 @@ export const useGlobalStore = () => {
         }
         asyncSetCurrentList(id);
         document.getElementById("close-button").className = "top5-button";
+        document.getElementById("close-button").disabled = false;
     }
     store.addRenameItemTransaction = function (index, newName) {
         let transaction = new RenameItem_Transaction(store, index-1, store.currentList.items[index-1], newName);
