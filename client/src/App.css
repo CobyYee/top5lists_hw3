@@ -175,6 +175,10 @@ body {
   font-size:18pt;
 }
 
+.list-card-button:disabled {
+  pointer-events: none;
+}
+
 #workspace-home, #workspace-edit {
   position:absolute;
   left:0%;

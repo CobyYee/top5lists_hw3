@@ -21,9 +21,10 @@ export const GlobalStoreActionType = {
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
     ADD_NEW_LIST: "ADD_NEW_LIST",
     SET_ITEM_EDIT_ACTIVE: "SET_ITEM_EDIT_ACTIVE",
+    SET_ITEM_EDIT_INACTIVE: "SET_ITEM_EDIT_INACTIVE",
     MARK_LIST_DELETION: "MARK_LIST_DELETION",
     CLEAR_LIST_DELETION: "CLEAR_LIST_DELETION",
-    STOP_EDITING_LIST_NAME: "STOP_EDITING_LIST_NAME "
+    STOP_EDITING_LIST_NAME: "STOP_EDITING_LIST_NAME"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -135,6 +136,17 @@ export const useGlobalStore = () => {
                     listMarkedForDeletion: null
                 });
             }
+            // STOP EDITING AN ITEM
+            case GlobalStoreActionType.SET_ITEM_EDIT_INACTIVE: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    isListNameEditActive: false,
+                    isItemEditActive: false,
+                    listMarkedForDeletion: null
+                });
+            }
             // MARK THE LIST THAT WILL BE DELETED
             case GlobalStoreActionType.MARK_LIST_DELETION: {
                 return setStore({
@@ -203,6 +215,10 @@ export const useGlobalStore = () => {
     // THIS FUNCTION CHANGES AN ITEM NAME
     store.renameItem = function (oldText, newText, index) {
         store.currentList.items[index] = newText;
+        storeReducer({
+            type: GlobalStoreActionType.SET_ITEM_EDIT_INACTIVE,
+            payload: null
+        })
         store.updateCurrentList();
     }
 
@@ -291,7 +307,6 @@ export const useGlobalStore = () => {
     store.addMoveItemTransaction = function (start, end) {
         let transaction = new MoveItem_Transaction(store, start, end);
         tps.addTransaction(transaction);
-        //store.updateToolbar();
     }
     store.moveItem = function (start, end) {
         start -= 1;
@@ -348,10 +363,17 @@ export const useGlobalStore = () => {
     }
     store.showDeleteModal = function(id) { 
         let modal = document.getElementById("delete-modal");
-        storeReducer({
-            type: GlobalStoreActionType.MARK_LIST_DELETION,
-            payload: id
-        })
+        async function getMarkedList(id) {
+            const response = await api.getTop5ListById(id);
+            if(response.data.success) {
+                let list = response.data.top5List;
+                storeReducer({
+                    type: GlobalStoreActionType.MARK_LIST_DELETION,
+                    payload: list
+                })
+            }
+        }
+        getMarkedList(id);
         modal.classList.add("is-visible");
     }
     store.hideDeleteListModal = function() {
@@ -365,7 +387,7 @@ export const useGlobalStore = () => {
     store.deleteMarkedList = function() {
         async function asyncDelete() {
             try {
-                const response = await api.deleteTop5ListById(store.listMarkedForDeletion);
+                const response = await api.deleteTop5ListById(store.listMarkedForDeletion._id);
                 store.hideDeleteListModal();
                 store.loadIdNamePairs();
             } catch (error) {
@@ -380,6 +402,7 @@ export const useGlobalStore = () => {
     store.canRedo = function () {
         return tps.hasTransactionToRedo();
     }
+    
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
     return { store, storeReducer };
 }

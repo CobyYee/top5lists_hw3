@@ -27,7 +27,7 @@ function EditToolbar() {
     let redoClass = "top5-button-disabled";
     let closeStatus = true;
     let closeClass = "top5-button-disabled";
-    if(store.currentList != null) {
+    if(store.currentList != null && store.isItemEditActive === false) {
         if(store.canUndo()) {
             undoStatus = false;
             undoClass = "top5-button";

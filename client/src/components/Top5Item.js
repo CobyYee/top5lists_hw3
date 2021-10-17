@@ -10,7 +10,7 @@ function Top5Item(props) {
     const { store } = useContext(GlobalStoreContext);
     const [draggedTo, setDraggedTo] = useState(0);
     const [text, setText] = useState(props.text);
-    const [editActive, setItemEdit] = useState("false");
+    const [editActive, setItemEdit] = useState(false);
 
     function handleDragStart(event) {
         event.dataTransfer.setData("item", event.target.id);
@@ -46,7 +46,6 @@ function Top5Item(props) {
     function handleToggleEdit(event) {
         event.stopPropagation();
         toggleEdit();
-        store.updateToolbar();
     }
 
     function toggleEdit() {
@@ -66,8 +65,23 @@ function Top5Item(props) {
             let id = event.target.id.substring("item-".length);
             store.addRenameItemTransaction(id, text);
             toggleEdit();
-            store.updateToolbar();
         }
+    }
+
+    function blur(event) {
+        let id = event.target.id.substring("item-".length);
+        store.addRenameItemTransaction(id, text);
+        toggleEdit();
+    }
+
+    let editDisabled = false;
+    if(store.isItemEditActive) {
+        editDisabled = true;
+    }
+
+    let dragStatus = true;
+    if(store.isItemEditActive) {
+        dragStatus = false;
     }
 
     let { index } = props;
@@ -84,9 +98,10 @@ function Top5Item(props) {
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            draggable="true"
+            draggable={dragStatus}
         >
             <input
+                disabled = {editDisabled}
                 type="button"
                 id={"edit-item-" + index + 1}
                 className="list-card-button"
@@ -95,7 +110,7 @@ function Top5Item(props) {
             />
             {props.text}
         </div>
-    if(!editActive) {
+    if(editActive) {
         item = 
             <input
                 id = {'item-' + (index + 1)}
@@ -104,6 +119,8 @@ function Top5Item(props) {
                 onKeyPress = {handleKeyPress}
                 onChange = {handleChange}
                 defaultValue = {text}
+                autoFocus
+                onBlur={blur}
             >
             </input>
     }
