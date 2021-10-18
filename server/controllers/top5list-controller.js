@@ -94,7 +94,7 @@ deleteTop5List = async (req, res) => {
     }).catch(err => console.log(err))
     */
    
-   await Top5List.findOneAndDelete({_id: req.params.id }).then(response => {
+    await Top5List.findOneAndDelete({_id: req.params.id }).then(response => {
        if(response.err === null) {
            return res.status(400).json({ success: false, error: response.err})
        }
@@ -104,7 +104,7 @@ deleteTop5List = async (req, res) => {
        else {
            return res.status(200).json({success: true});
        }
-   }).catch(err=> console.log(err));
+    }).catch(err=> console.log(err));
    
 }
 getTop5ListById = async (req, res) => {
@@ -134,11 +134,13 @@ getTop5ListPairs = async (req, res) => {
         if (err) {
             return res.status(400).json({ success: false, error: err})
         }
+        /*
         if (!top5Lists.length) {
             return res
                 .status(404)
                 .json({ success: false, error: 'Top 5 Lists not found'})
         }
+        */
         else {
             // PUT ALL THE LISTS INTO ID, NAME PAIRS
             let pairs = [];
