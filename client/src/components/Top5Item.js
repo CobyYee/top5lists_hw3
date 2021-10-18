@@ -45,6 +45,8 @@ function Top5Item(props) {
 
     function handleToggleEdit(event) {
         event.stopPropagation();
+        document.getElementById("close-button").className = "top5-button-disabled";
+        document.getElementById("close-button").disabled = true;
         setText(props.text);
         toggleEdit();
     }
@@ -66,6 +68,8 @@ function Top5Item(props) {
             toggleEdit();
             let id = event.target.id.substring("item-".length);
             store.addRenameItemTransaction(id, text);
+            document.getElementById("close-button").className = "top5-button";
+            document.getElementById("close-button").disabled = false;
         }
     }
 
@@ -73,6 +77,8 @@ function Top5Item(props) {
         toggleEdit();
         let id = event.target.id.substring("item-".length);
         store.addRenameItemTransaction(id, text);
+        document.getElementById("close-button").className = "top5-button";
+        document.getElementById("close-button").disabled = false;
     }
 
     let editDisabled = false;
