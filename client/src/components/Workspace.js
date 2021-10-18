@@ -28,6 +28,11 @@ function Workspace() {
                 }
             </div>;
     }
+    /*
+    else {
+        store.history.push("/");
+    }
+    */
     return (
         <div id="top5-workspace">
             <div id="workspace-edit">

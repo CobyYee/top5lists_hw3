@@ -119,7 +119,7 @@ export const useGlobalStore = () => {
                 return setStore({
                     idNamePairs: payload.idNamePairs,
                     currentList: payload.top5List,
-                    newListCounter: store.newListCounter+1,
+                    newListCounter: (store.newListCounter+1),
                     isListNameEditActive: false,
                     isItemEditActive: false,
                     listMarkedForDeletion: null
